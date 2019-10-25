@@ -1,0 +1,20 @@
+一、HTTP服务器的基本知识
+1. Node核心：底层HTTP解析器、底层TCP服务器（querystring、http、net）
+2. 社区模块：数据库驱动、中间件、路由、上传解析、实时websocket（node-formidable、node-cgi、mongoose、socket.io、express、connect）
+3. 应用逻辑：路由处理器、目录结构、业务算法（http.createServer()、app.use()）
+var http = require('http')
+var server = http.createServer(function (req, res) {
+    // 处理请求
+})
+服务器每收到一条HTTP请求，都会用新的req和res对象触发请求回调函数。在触发回调函数之前Node会解析请求的HTTP头，并将它们作为req对象的一部分提供给请求回调。但Node不会在回调函数触发之前开始对请求体的解析。
+Node也不会自动往客户端写任何响应。在调用完请求回调函数之后，就要用res.end()方法结束响应。这样在结束响应之前，你可以在请求的生命期内运行任何你想运行的异步逻辑。
+如果你没能结束响应，请求会挂起，直到客户端超时，或者会一直处于打开状态。
+Node服务器是长期运行的进程，在它的整个生命周期里，它会处理很多请求。
+
+你可能想用body.length的值设定Content-Length，但Content-Length的值应该是字节长度，不是字符长度，并且如果字符串中有多字节字符，两者的长度是不一样的。
+为了规避这个问题，Node提供了一个Buffer.byteLength()方法。
+
+
+表单提交请求带的Content-Type值通常有两种：
+1. application/x-www-form-urlencoded：这是HTML表单的默认值
+2. multipart/form-data：在表单中含有文件或非ASCII或二进制数据时使用
